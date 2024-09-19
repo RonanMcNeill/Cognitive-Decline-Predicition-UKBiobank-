@@ -1,0 +1,1096 @@
+---
+title: 'Rate of Cognitive Decline in the UKBiobank: Data Analysis Plan'
+author: "Ronan McNeill"
+date: "11th June 2024"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+### Foreword
+
+This RMarkdown document details the data analysis plan for the paper of: 
+
+"Holistic Prediction of the Longitudinal Rate of Cognitive Decline: An Aōtearoa New Zealand Perspective" (Title subject to change).
+
+In recent years, Alzheimer's disease (the predominant cause of accelerated cognitive decline and dementia) has overtaken cancer as the most feared disease in the general population, and is quickly becoming the leading health issue of the century (Patterson, 2018). 
+
+### Mission Statement
+
+In a prospective analytic design, the proposed study has two objectives. Firstly, we aim to analyse the predictors of an individual's rate of cognitive decline during middle to older ageing. Promisingly, this may evince future hypotheses regarding the causal mechanisms of dementia inclusive disease, and the targets of preventative treatments. Our second objective is to create and evaluate a multidimensional predictive model that explores how accurately we can predict the rate at which an individual will cognitively decline during ageing. These objectives will be achieved utilising state of the art statistical and machine learning methods to explore the largest and most holistic collection of cognitively relevant variables to date. Notably including physiological, neural, demographic, cognitive, physical activity, diet, lifestyle, mental health, physical health, sleep, and social factors from the UKBiobank. Additionally, in evaluating our findings it will be discussed how these key factors of cognitive health in the Western European context may and may not correlate with mātauranga Māori knowledge for the determinants of cognitive health in an Aōtearoa New Zealand context.
+
+### Participant Details
+
+The UK Biobank is a large prospective cohort that aims to improve prevention, diagnosis and treatment of age-associated pathologies (https://www.ukbiobank.ac.uk/). During recruitment (2006 - 2010), 502,356 participants aged 37-73 years from the United Kingdom (UK), provided informed consent for use of their anonymised data and health records for future health-related research. Ethical approval for the UK Biobank was provided by both the National Information Governance Board for Health and Social Care and the Northwest Multicentre Research Ethics Committee (11/NW/0382). 
+
+Participants attended a UK assessment centre up to four times, providing data through verbal interviews, clinical measurements (including brain MRI, blood and urine assays) and touchscreen questionnaires. Data were collected on demographic, cognitive, physical activity, diet, lifestyle, mental health, physical health, sleep, and social factors. In addition, health records were accessed, providing information on participants' medical history, family medical history, and medication history. From each of these domains, 'phenotype' measures with potential relevance for cognitive decline will be included in the current study (see below for a full list), with approved access under UK Biobank data application 70132-21042. 
+
+With the exception of cognitive outcome variables (utilised at two timepoints), if a given variable was collected at multiple instances, only the first instance will be used in the proposed study, ensuring that we meet assumptions of independence. The only exclusion criteria is missing data (as all variables of interest will be modelled). However, the full cohort has varied amounts of missing data between variables. Consequently, univariate analyses will utilise all pairwise complete observations for each association, leading to a mean sample size of 55,482. However, for multivariate analyses, complete observations are required across variables and the sample size is yet to be determined.
+
+### UKBiobank Field Codes Utilised
+| Phenotype ID                                                                         | Description                                                                                          |
+|--------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| eid                                                                                  | Participant identifier                                                                               |
+| 53                                                                                   | Date of attending assessment centre                                                                  |
+| **Demographic Phenotypes**                                                               |                                                                                                      |
+| 21003                                                                                | Age when attended assessment centre                                                                  |
+| 34                                                                                   | Year of Birth                                                                                        |
+| 52                                                                                   | Month of Birth                                                                                       |
+| 31                                                                                   | Sex                                                                                                  |
+| 21000                                                                                | Ethnic background                                                                                    |
+| 738                                                                                  | Average total household income before tax                                                            |
+| 6142                                                                                 | Current employment status                                                                            |
+| 20277                                                                                | Job code at visit                                                                                    |
+| 826                                                                                  | Job involves shift work                                                                              |
+| 6138                                                                                 | Qualifications                                                                                       |
+| _**TAHA HINENGARO**_                                                                       |                                                                                                      |
+| **Cognitive Functioning**                                                                |                                                                                                      |
+| 20023                                                                                | Mean time to correctly identify matches                                                              |
+| 4282                                                                                 | Maximum digits remembered correctly                                                                  |
+| 20016                                                                                | Fluid intelligence score                                                                             |
+| 26302                                                                                | Specific cognitive ability (AS)                                                                             |
+| 20136                                                                                | When trail making test completed                                                                     |
+| 20156                                                                                | Duration to complete numeric path (trail #1)                                                         |
+| 20157                                                                                | Duration to complete alphanumeric path (trail #2)                                                    |
+| 20247                                                                                | Total errors traversing numeric path (trail #1)                                                      |
+| 20248                                                                                | Total errors traversing alphanumeric path (trail #2)                                                 |
+| 20137                                                                                | When symbol digit substitution test completed                                                        |
+| 20159                                                                                | Number of symbol digit matches made correctly                                                        |
+| 20195                                                                                | Number of symbol digit matches attempted                                                             |
+| 399                                                                                  | Number of incorrect matches in round                                                                 |
+| 400                                                                                  | Time to complete round                                                                               |
+| **Mental Health Phenotypes**                                                             |                                                                                                      |
+| 29000                                                                                | Mental health conditions ever diagnosed by a professional                                            |
+| 29001                                                                                | Mental health conditions experienced by first degree blood relatives                                 |
+| 29182                                                                                | Belief that own life is meaningful                                                                   |
+| 29181                                                                                | General happiness                                                                                    |
+| 20127                                                                                | Neuroticism score                                                                                    |
+| 1920                                                                                 | Mood swings                                                                                          |
+| 1930                                                                                 | Miserableness                                                                                        |
+| 1940                                                                                 | Irritability                                                                                         |
+| 1950                                                                                 | Sensitivity / hurt feelings                                                                          |
+| 1960                                                                                 | Fed-up feelings                                                                                      |
+| 1970                                                                                 | Nervous feelings                                                                                     |
+| 1980                                                                                 | Worrier / anxious feelings                                                                           |
+| 1990                                                                                 | Tense / 'highly strung'                                                                              |
+| 2000                                                                                 | Worry too long after embarrassment                                                                   |
+| 2010                                                                                 | Suffer from 'nerves'                                                                                 |
+| 2020                                                                                 | Loneliness, isolation                                                                                |
+| 2030                                                                                 | Guilty feelings                                                                                      |
+| 2040                                                                                 | Risk taking                                                                                          |
+| 4526                                                                                 | Happiness                                                                                            |
+| 4537                                                                                 | Work/job satisfaction                                                                                |
+| 4548                                                                                 | Health satisfaction                                                                                  |
+| 4559                                                                                 | Family relationship satisfaction                                                                     |
+| 4570                                                                                 | Friendships satisfaction                                                                             |
+| 4581                                                                                 | Financial situation satisfaction                                                                     |
+| 2050                                                                                 | Frequency of depressed mood in last 2 weeks                                                          |
+| 2060                                                                                 | Frequency of unenthusiasm / disinterest in last 2 weeks                                              |
+| 2070                                                                                 | Frequency of tenseness / restlessness in last 2 weeks                                                |
+| 2080                                                                                 | Frequency of tiredness / lethargy in last 2 weeks                                                    |
+| 2090                                                                                 | Seen doctor (GP) for nerves, anxiety, tension or depression                                          |
+| _**TAHA WHĀNAU**_                                                                          |                                                                                                      |
+| **Social Phenotypes**                                                                    |                                                                                                      |
+| 709                                                                                  | Number in household                                                                                  |
+| 1120                                                                                 | Weekly usage of mobile phone in last 3 months                                                        |
+| 1031                                                                                 | Frequency of friend/family visits                                                                    |
+| 6160                                                                                 | Leisure/social activities                                                                            |
+| 2110                                                                                 | Able to confide                                                                                      |
+| **Family Medical History**                                                               |                                                                                                      |
+| 20107                                                                                | Illnesses of father                                                                                  |
+| 20110                                                                                | Illnesses of mother                                                                                  |
+| 20111                                                                                | Illnesses of siblings                                                                                |
+| 1807                                                                                 | Father's age at death                                                                                |
+| 3526                                                                                 | Mother's age at death                                                                                |
+| 1787                                                                                 | Maternal smoking around birth                                                                        |
+| _**TAHA TINANA**_                                                                          |                                                                                                      |
+| **Physical Health Phenotypes**                                                           |                                                                                                      |
+| 2178                                                                                 | Overall health rating                                                                                |
+| 41270                                                                                | Diagnoses - ICD10                                                                                    |
+| 2188                                                                                 | Long-standing illness, disability or infirmity                                                       |
+| 2296                                                                                 | Falls in the last year                                                                               |
+| 2306                                                                                 | Weight change compared with 1 year ago                                                               |
+| 3799                                                                                 | Headaches for 3+ months                                                                              |
+| 6150                                                                                 | Vascular/heart problems diagnosed by doctor                                                          |
+| 6152                                                                                 | Blood clot, DVT, bronchitis, emphysema, asthma, rhinitis, eczema, allergy diagnosed by doctor        |
+| 2443                                                                                 | Diabetes diagnosed by doctor                                                                         |
+| 2453                                                                                 | Cancer diagnosed by doctor                                                                           |
+| 20002                                                                                | Non-cancer illness code, self-reported                                                               |
+| 20003                                                                                | Treatment/medication code                                                                            |
+| 4079                                                                                 | Diastolic blood pressure, automated reading                                                          |
+| 4080                                                                                 | Systolic blood pressure, automated reading                                                           |
+| 46                                                                                   | Hand grip strength (left)                                                                            |
+| 47                                                                                   | Hand grip strength (right)                                                                           |
+| 21001                                                                                | Body mass index (BMI)                                                                                |
+| 23105                                                                                | Basal metabolic rate                                                                                 |
+| 23099                                                                                | Body fat percentage                                                                                  |
+| 29156                                                                                | Number of times have had COVID-19                                                                    |
+| 29161                                                                                | Recovery from COVID-19                                                                               |
+| **Biomarkers** |
+| 30160                | Basophill count |
+| 30150                | Eosinophill count |
+| 30030                | Haematocrit percentage |
+| 30020                | Haemoglobin concentration |
+| 30120                | Lymphocyte count |
+| 30060                | Mean corpuscular haemoglobin concentration |
+| 30040                | Mean corpuscular volume |
+| 30100                | Mean platelet (thrombocyte) volume |
+| 30260                | Mean reticulocyte volume |
+| 30270                | Mean sphered cell volume |
+| 30130                | Monocyte count |
+| 30140                | Neutrophill count |
+| 30170                | Nucleated red blood cell count |
+| 30080                | Platelet count |
+| 30110                | Platelet distribution width |
+| 30010                | Red blood cell (erythrocyte) count |
+| 30070                | Red blood cell (erythrocyte) distribution width |
+| 30250                | Reticulocyte count |
+| 30000                | White blood cell (leukocyte) count |
+| 30620                | Alanine aminotransferase |
+| 30600                | Albumin |
+| 30610                | Alkaline phosphatase |
+| 30630                | Apolipoprotein A |
+| 30640                | Apolipoprotein B |
+| 30650                | Aspartate aminotransferase |
+| 30710                | C-reactive protein |
+| 30680                | Calcium |
+| 30690                | Cholesterol |
+| 30700                | Creatinine |
+| 30720                | Cystatin C |
+| 30660                | Direct bilirubin |
+| 30730                | Gamma glutamyltransferase |
+| 30740                | Glucose |
+| 30750                | Glycated haemoglobin (HbA1c) |
+| 30760                | HDL cholesterol |
+| 30770                | IGF-1 |
+| 30780                | LDL direct |
+| 30790                | Lipoprotein A |
+| 30800                | Oestradiol |
+| 30810                | Phosphate |
+| 30820                | Rheumatoid factor |
+| 30830                | SHBG |
+| 30850                | Testosterone |
+| 30840                | Total bilirubin |
+| 30860                | Total protein |
+| 30870                | Triglycerides |
+| 30880                | Urate |
+| 30670                | Urea |
+| 30890                | Vitamin D |
+| 30510                | Creatinine (enzymatic) in urine |
+| 30500                | Microalbumin in urine |
+| 30520                | Potassium in urine |
+| 30530                | Sodium in urine |
+| **Physical Activity Phenotypes**                                                         |                                                                                                      |
+| 806                                                                                  | Job involves mainly walking or standing                                                              |
+| 816                                                                                  | Job involves heavy manual or physical work                                                           |
+| 22032                                                                                | IPAQ activity group                                                                                  |
+| 22040                                                                                | Summed MET minutes per week for all activity                                                         |
+| 40048                                                                                | Light - Overall average                                                                              |
+| 40049                                                                                | Moderate-Vigorous - Overall average                                                                  |
+| 40047                                                                                | Sedentary - Overall average                                                                          |
+| 90015                                                                                | Data quality, good wear time                                                                         |
+| **Sleep Phenotypes**                                                                     |                                                                                                      |
+| 1160                                                                                 | Sleep duration                                                                                       |
+| 1190                                                                                 | Nap during day                                                                                       |
+| 1200                                                                                 | Sleeplessness / insomnia                                                                             |
+| 40046                                                                                | Sleep - Overall average                                                                              |
+| **Dietary Phenotypes**                                                                   |                                                                                                      |
+| 20161                                                                                | Pack years of smoking                                                                                |
+| 20116                                                                                | Smoking status                                                                                       |
+| 2887                                                                                 | Number of cigarettes previously smoked daily                                                         |
+| 2926                                                                                 | Number of unsuccessful stop-smoking attempts                                                         |
+| 29104                                                                                | Ever used cannabis                                                                                   |
+| 1528                                                                                 | Water intake                                                                                         |
+| 1498                                                                                 | Coffee intake                                                                                        |
+| 1289                                                                                 | Cooked vegetable intake                                                                              |
+| 1309                                                                                 | Fresh fruit intake                                                                                   |
+| 1329                                                                                 | Oily fish intake                                                                                     |
+| 1349                                                                                 | Processed meat intake                                                                                |
+| 1359                                                                                 | Poultry intake                                                                                       |
+| 1369                                                                                 | Beef intake                                                                                          |
+| 1389                                                                                 | Pork intake                                                                                          |
+| 1408                                                                                 | Cheese intake                                                                                        |
+| 1438                                                                                 | Bread intake                                                                                         |
+| 1458                                                                                 | Cereal intake                                                                                        |
+| 1558                                                                                 | Alcohol intake frequency                                                                             |
+| 1677                                                                                 | Breastfed as a baby                                                                                  |
+| **Neural Phenotypes**                                                                    |                                                                                                      |
+| **T1-Weighted Structural MRI (Global, Regional (FAST) and Subcortical (FIRST) Volumes)** |                                                                                                      |
+| 25003                                                                                | Volume of ventricular cerebrospinal fluid (normalised for head size)                                 |
+| 25005                                                                                | Volume of grey matter (normalised for head size)                                                     |
+| 25007                                                                                | Volume of white matter (normalised for head size)                                                    |
+| 25009                                                                                | Volume of brain, grey+white matter (normalised for head size)                                        |
+| 25888                                                                                | Volume of grey matter in Amygdala (left)                                                             |
+| 25889                                                                                | Volume of grey matter in Amygdala (right)                                                            |
+| 25822                                                                                | Volume of grey matter in Angular Gyrus (left)                                                        |
+| 25823                                                                                | Volume of grey matter in Angular Gyrus (right)                                                       |
+| 25892                                                                                | Volume of grey matter in Brain-Stem                                                                  |
+| 25880                                                                                | Volume of grey matter in Caudate (left)                                                              |
+| 25881                                                                                | Volume of grey matter in Caudate (right)                                                             |
+| 25864                                                                                | Volume of grey matter in Central Opercular Cortex (left)                                             |
+| 25865                                                                                | Volume of grey matter in Central Opercular Cortex (right)                                            |
+| 25838                                                                                | Volume of grey matter in Cingulate Gyrus, anterior division (left)                                   |
+| 25839                                                                                | Volume of grey matter in Cingulate Gyrus, anterior division (right)                                  |
+| 25840                                                                                | Volume of grey matter in Cingulate Gyrus, posterior division (left)                                  |
+| 25841                                                                                | Volume of grey matter in Cingulate Gyrus, posterior division (right)                                 |
+| 25900                                                                                | Volume of grey matter in Crus I Cerebellum (left)                                                    |
+| 25902                                                                                | Volume of grey matter in Crus I Cerebellum (right)                                                   |
+| 25901                                                                                | Volume of grey matter in Crus I Cerebellum (vermis)                                                  |
+| 25903                                                                                | Volume of grey matter in Crus II Cerebellum (left)                                                   |
+| 25905                                                                                | Volume of grey matter in Crus II Cerebellum (right)                                                  |
+| 25904                                                                                | Volume of grey matter in Crus II Cerebellum (vermis)                                                 |
+| 25844                                                                                | Volume of grey matter in Cuneal Cortex (left)                                                        |
+| 25845                                                                                | Volume of grey matter in Cuneal Cortex (right)                                                       |
+| 25830                                                                                | Volume of grey matter in Frontal Medial Cortex (left)                                                |
+| 25831                                                                                | Volume of grey matter in Frontal Medial Cortex (right)                                               |
+| 25862                                                                                | Volume of grey matter in Frontal Operculum Cortex (left)                                             |
+| 25863                                                                                | Volume of grey matter in Frontal Operculum Cortex (right)                                            |
+| 25846                                                                                | Volume of grey matter in Frontal Orbital Cortex (left)                                               |
+| 25847                                                                                | Volume of grey matter in Frontal Orbital Cortex (right)                                              |
+| 25782                                                                                | Volume of grey matter in Frontal Pole (left)                                                         |
+| 25783                                                                                | Volume of grey matter in Frontal Pole (right)                                                        |
+| 25870                                                                                | Volume of grey matter in Heschls Gyrus (includes H and H ) (left)                                    |
+| 25871                                                                                | Volume of grey matter in Heschls Gyrus (includes H and H ) (right)                                   |
+| 25886                                                                                | Volume of grey matter in Hippocampus (left)                                                          |
+| 25887                                                                                | Volume of grey matter in Hippocampus (right)                                                         |
+| 25893                                                                                | Volume of grey matter in I-IV Cerebellum (left)                                                      |
+| 25894                                                                                | Volume of grey matter in I-IV Cerebellum (right)                                                     |
+| 25915                                                                                | Volume of grey matter in IX Cerebellum (left)                                                        |
+| 25917                                                                                | Volume of grey matter in IX Cerebellum (right)                                                       |
+| 25916                                                                                | Volume of grey matter in IX Cerebellum (vermis)                                                      |
+| 25792                                                                                | Volume of grey matter in Inferior Frontal Gyrus, pars opercularis (left)                             |
+| 25793                                                                                | Volume of grey matter in Inferior Frontal Gyrus, pars opercularis (right)                            |
+| 25790                                                                                | Volume of grey matter in Inferior Frontal Gyrus, pars triangularis (left)                            |
+| 25791                                                                                | Volume of grey matter in Inferior Frontal Gyrus, pars triangularis (right)                           |
+| 25808                                                                                | Volume of grey matter in Inferior Temporal Gyrus, anterior division (left)                           |
+| 25809                                                                                | Volume of grey matter in Inferior Temporal Gyrus, anterior division (right)                          |
+| 25810                                                                                | Volume of grey matter in Inferior Temporal Gyrus, posterior division (left)                          |
+| 25811                                                                                | Volume of grey matter in Inferior Temporal Gyrus, posterior division (right)                         |
+| 25812                                                                                | Volume of grey matter in Inferior Temporal Gyrus, temporooccipital part (left)                       |
+| 25813                                                                                | Volume of grey matter in Inferior Temporal Gyrus, temporooccipital part (right)                      |
+| 25784                                                                                | Volume of grey matter in Insular Cortex (left)                                                       |
+| 25785                                                                                | Volume of grey matter in Insular Cortex (right)                                                      |
+| 25828                                                                                | Volume of grey matter in Intracalcarine Cortex (left)                                                |
+| 25829                                                                                | Volume of grey matter in Intracalcarine Cortex (right)                                               |
+| 25832                                                                                | Volume of grey matter in Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex) (left)  |
+| 25833                                                                                | Volume of grey matter in Juxtapositional Lobule Cortex (formerly Supplementary Motor Cortex) (right) |
+| 25826                                                                                | Volume of grey matter in Lateral Occipital Cortex, inferior division (left)                          |
+| 25827                                                                                | Volume of grey matter in Lateral Occipital Cortex, inferior division (right)                         |
+| 25824                                                                                | Volume of grey matter in Lateral Occipital Cortex, superior division (left)                          |
+| 25825                                                                                | Volume of grey matter in Lateral Occipital Cortex, superior division (right)                         |
+| 25852                                                                                | Volume of grey matter in Lingual Gyrus (left)                                                        |
+| 25853                                                                                | Volume of grey matter in Lingual Gyrus (right)                                                       |
+| 25788                                                                                | Volume of grey matter in Middle Frontal Gyrus (left)                                                 |
+| 25789                                                                                | Volume of grey matter in Middle Frontal Gyrus (right)                                                |
+| 25802                                                                                | Volume of grey matter in Middle Temporal Gyrus, anterior division (left)                             |
+| 25803                                                                                | Volume of grey matter in Middle Temporal Gyrus, anterior division (right)                            |
+| 25804                                                                                | Volume of grey matter in Middle Temporal Gyrus, posterior division (left)                            |
+| 25805                                                                                | Volume of grey matter in Middle Temporal Gyrus, posterior division (right)                           |
+| 25806                                                                                | Volume of grey matter in Middle Temporal Gyrus, temporooccipital part (left)                         |
+| 25807                                                                                | Volume of grey matter in Middle Temporal Gyrus, temporooccipital part (right)                        |
+| 25860                                                                                | Volume of grey matter in Occipital Fusiform Gyrus (left)                                             |
+| 25861                                                                                | Volume of grey matter in Occipital Fusiform Gyrus (right)                                            |
+| 25876                                                                                | Volume of grey matter in Occipital Pole (left)                                                       |
+| 25877                                                                                | Volume of grey matter in Occipital Pole (right)                                                      |
+| 25884                                                                                | Volume of grey matter in Pallidum (left)                                                             |
+| 25885                                                                                | Volume of grey matter in Pallidum (right)                                                            |
+| 25836                                                                                | Volume of grey matter in Paracingulate Gyrus (left)                                                  |
+| 25837                                                                                | Volume of grey matter in Paracingulate Gyrus (right)                                                 |
+| 25848                                                                                | Volume of grey matter in Parahippocampal Gyrus, anterior division (left)                             |
+| 25849                                                                                | Volume of grey matter in Parahippocampal Gyrus, anterior division (right)                            |
+| 25850                                                                                | Volume of grey matter in Parahippocampal Gyrus, posterior division (left)                            |
+| 25851                                                                                | Volume of grey matter in Parahippocampal Gyrus, posterior division (right)                           |
+| 25866                                                                                | Volume of grey matter in Parietal Operculum Cortex (left)                                            |
+| 25867                                                                                | Volume of grey matter in Parietal Operculum Cortex (right)                                           |
+| 25868                                                                                | Volume of grey matter in Planum Polare (left)                                                        |
+| 25869                                                                                | Volume of grey matter in Planum Polare (right)                                                       |
+| 25872                                                                                | Volume of grey matter in Planum Temporale (left)                                                     |
+| 25873                                                                                | Volume of grey matter in Planum Temporale (right)                                                    |
+| 25814                                                                                | Volume of grey matter in Postcentral Gyrus (left)                                                    |
+| 25815                                                                                | Volume of grey matter in Postcentral Gyrus (right)                                                   |
+| 25794                                                                                | Volume of grey matter in Precentral Gyrus (left)                                                     |
+| 25795                                                                                | Volume of grey matter in Precentral Gyrus (right)                                                    |
+| 25842                                                                                | Volume of grey matter in Precuneous Cortex (left)                                                    |
+| 25843                                                                                | Volume of grey matter in Precuneous Cortex (right)                                                   |
+| 25882                                                                                | Volume of grey matter in Putamen (left)                                                              |
+| 25883                                                                                | Volume of grey matter in Putamen (right)                                                             |
+| 25834                                                                                | Volume of grey matter in Subcallosal Cortex (left)                                                   |
+| 25835                                                                                | Volume of grey matter in Subcallosal Cortex (right)                                                  |
+| 25786                                                                                | Volume of grey matter in Superior Frontal Gyrus (left)                                               |
+| 25787                                                                                | Volume of grey matter in Superior Frontal Gyrus (right)                                              |
+| 25816                                                                                | Volume of grey matter in Superior Parietal Lobule (left)                                             |
+| 25817                                                                                | Volume of grey matter in Superior Parietal Lobule (right)                                            |
+| 25798                                                                                | Volume of grey matter in Superior Temporal Gyrus, anterior division (left)                           |
+| 25799                                                                                | Volume of grey matter in Superior Temporal Gyrus, anterior division (right)                          |
+| 25800                                                                                | Volume of grey matter in Superior Temporal Gyrus, posterior division (left)                          |
+| 25801                                                                                | Volume of grey matter in Superior Temporal Gyrus, posterior division (right)                         |
+| 25874                                                                                | Volume of grey matter in Supracalcarine Cortex (left)                                                |
+| 25875                                                                                | Volume of grey matter in Supracalcarine Cortex (right)                                               |
+| 25818                                                                                | Volume of grey matter in Supramarginal Gyrus, anterior division (left)                               |
+| 25819                                                                                | Volume of grey matter in Supramarginal Gyrus, anterior division (right)                              |
+| 25820                                                                                | Volume of grey matter in Supramarginal Gyrus, posterior division (left)                              |
+| 25821                                                                                | Volume of grey matter in Supramarginal Gyrus, posterior division (right)                             |
+| 25854                                                                                | Volume of grey matter in Temporal Fusiform Cortex, anterior division (left)                          |
+| 25855                                                                                | Volume of grey matter in Temporal Fusiform Cortex, anterior division (right)                         |
+| 25856                                                                                | Volume of grey matter in Temporal Fusiform Cortex, posterior division (left)                         |
+| 25857                                                                                | Volume of grey matter in Temporal Fusiform Cortex, posterior division (right)                        |
+| 25858                                                                                | Volume of grey matter in Temporal Occipital Fusiform Cortex (left)                                   |
+| 25859                                                                                | Volume of grey matter in Temporal Occipital Fusiform Cortex (right)                                  |
+| 25796                                                                                | Volume of grey matter in Temporal Pole (left)                                                        |
+| 25797                                                                                | Volume of grey matter in Temporal Pole (right)                                                       |
+| 25878                                                                                | Volume of grey matter in Thalamus (left)                                                             |
+| 25879                                                                                | Volume of grey matter in Thalamus (right)                                                            |
+| 25895                                                                                | Volume of grey matter in V Cerebellum (left)                                                         |
+| 25896                                                                                | Volume of grey matter in V Cerebellum (right)                                                        |
+| 25897                                                                                | Volume of grey matter in VI Cerebellum (left)                                                        |
+| 25899                                                                                | Volume of grey matter in VI Cerebellum (right)                                                       |
+| 25898                                                                                | Volume of grey matter in VI Cerebellum (vermis)                                                      |
+| 25909                                                                                | Volume of grey matter in VIIIa Cerebellum (left)                                                     |
+| 25911                                                                                | Volume of grey matter in VIIIa Cerebellum (right)                                                    |
+| 25910                                                                                | Volume of grey matter in VIIIa Cerebellum (vermis)                                                   |
+| 25912                                                                                | Volume of grey matter in VIIIb Cerebellum (left)                                                     |
+| 25914                                                                                | Volume of grey matter in VIIIb Cerebellum (right)                                                    |
+| 25913                                                                                | Volume of grey matter in VIIIb Cerebellum (vermis)                                                   |
+| 25906                                                                                | Volume of grey matter in VIIb Cerebellum (left)                                                      |
+| 25908                                                                                | Volume of grey matter in VIIb Cerebellum (right)                                                     |
+| 25907                                                                                | Volume of grey matter in VIIb Cerebellum (vermis)                                                    |
+| 25890                                                                                | Volume of grey matter in Ventral Striatum (left)                                                     |
+| 25891                                                                                | Volume of grey matter in Ventral Striatum (right)                                                    |
+| 25918                                                                                | Volume of grey matter in X Cerebellum (left)                                                         |
+| 25919                                                                                | Volume of grey matter in X Cerebellum (vermis)                                                       |
+| 25920                                                                                | Volume of grey matter in X Cerebellum (right)                                                        |
+| 25023                                                                                | Volume of accumbens (left)                                                                           |
+| 25024                                                                                | Volume of accumbens (right)                                                                          |
+| 25021                                                                                | Volume of amygdala (left)                                                                            |
+| 25022                                                                                | Volume of amygdala (right)                                                                           |
+| 25013                                                                                | Volume of caudate (left)                                                                             |
+| 25014                                                                                | Volume of caudate (right)                                                                            |
+| 25019                                                                                | Volume of hippocampus (left)                                                                         |
+| 25020                                                                                | Volume of hippocampus (right)                                                                        |
+| 25017                                                                                | Volume of pallidum (left)                                                                            |
+| 25018                                                                                | Volume of pallidum (right)                                                                           |
+| 25015                                                                                | Volume of putamen (left)                                                                             |
+| 25016                                                                                | Volume of putamen (right)                                                                            |
+| 25011                                                                                | Volume of thalamus (left)                                                                            |
+| 25012                                                                                | Volume of thalamus (right)                                                                           |
+| **T2-Weighted MRI**                                                                      |                                                                                                      |
+| 25781                                                                                | Total volume of white matter hyperintensities (from T1 and T2 _FLAIR images)                         |
+| **Arterial Spin Labelling MRI**                                                          |                                                                                                      |
+| 24380                                                                                | Mean CBF in Caudate (left)                                                                           |
+| 24379                                                                                | Mean CBF in Caudate (right)                                                                          |
+| 24363                                                                                | Mean CBF in Cerebellum in grey matter (left)                                                         |
+| 24362                                                                                | Mean CBF in Cerebellum in grey matter (right)                                                        |
+| 24365                                                                                | Mean CBF in Frontal Lobe in grey matter (left)                                                       |
+| 24364                                                                                | Mean CBF in Frontal Lobe in grey matter (right)                                                      |
+| 24373                                                                                | Mean CBF in Internal Carotid Artery vascular territory in grey matter (left)                         |
+| 24372                                                                                | Mean CBF in Internal Carotid Artery vascular territory in grey matter (right)                        |
+| 24367                                                                                | Mean CBF in Occipital Lobe in grey matter (left)                                                     |
+| 24366                                                                                | Mean CBF in Occipital Lobe in grey matter (right)                                                    |
+| 24369                                                                                | Mean CBF in Parietal Lobe in grey matter (left)                                                      |
+| 24368                                                                                | Mean CBF in Parietal Lobe in grey matter (right)                                                     |
+| 24382                                                                                | Mean CBF in Putamen (left)                                                                           |
+| 24381                                                                                | Mean CBF in Putamen (right)                                                                          |
+| 24371                                                                                | Mean CBF in Temporal Lobe in grey matter (left)                                                      |
+| 24370                                                                                | Mean CBF in Temporal Lobe in grey matter (right)                                                     |
+| 24384                                                                                | Mean CBF in Thalamus (left)                                                                          |
+| 24383                                                                                | Mean CBF in Thalamus (right)                                                                         |
+| 24374                                                                                | Mean CBF in VertebroBasilar Arteries vascular territories in grey matter                             |
+| 24377                                                                                | Mean CBF in cerebrum in white matter (left)                                                          |
+| 24378                                                                                | Mean CBF in cerebrum in white matter (right)                                                         |
+| 24361                                                                                | Mean CBF in cortex in grey matter                                                                    |
+| 24360                                                                                | Mean CBF in whole brain in grey matter                                                               |
+| 24375                                                                                | Mean CBF in whole brain in white matter                                                              |
+| **Diffusion MRI**                                                                        |                                                                                                      |
+| 25488                                                                                | Weighted-mean FA in tract acoustic radiation (left)                                                  |
+| 25489                                                                                | Weighted-mean FA in tract acoustic radiation (right)                                                 |
+| 25490                                                                                | Weighted-mean FA in tract anterior thalamic radiation (left)                                         |
+| 25491                                                                                | Weighted-mean FA in tract anterior thalamic radiation (right)                                        |
+| 25492                                                                                | Weighted-mean FA in tract cingulate gyrus part of cingulum (left)                                    |
+| 25493                                                                                | Weighted-mean FA in tract cingulate gyrus part of cingulum (right)                                   |
+| 25496                                                                                | Weighted-mean FA in tract corticospinal tract (left)                                                 |
+| 25497                                                                                | Weighted-mean FA in tract corticospinal tract (right)                                                |
+| 25498                                                                                | Weighted-mean FA in tract forceps major                                                              |
+| 25499                                                                                | Weighted-mean FA in tract forceps minor                                                              |
+| 25500                                                                                | Weighted-mean FA in tract inferior fronto-occipital fasciculus (left)                                |
+| 25501                                                                                | Weighted-mean FA in tract inferior fronto-occipital fasciculus (right)                               |
+| 25502                                                                                | Weighted-mean FA in tract inferior longitudinal fasciculus (left)                                    |
+| 25503                                                                                | Weighted-mean FA in tract inferior longitudinal fasciculus (right)                                   |
+| 25505                                                                                | Weighted-mean FA in tract medial lemniscus (left)                                                    |
+| 25506                                                                                | Weighted-mean FA in tract medial lemniscus (right)                                                   |
+| 25504                                                                                | Weighted-mean FA in tract middle cerebellar peduncle                                                 |
+| 25494                                                                                | Weighted-mean FA in tract parahippocampal part of cingulum (left)                                    |
+| 25495                                                                                | Weighted-mean FA in tract parahippocampal part of cingulum (right)                                   |
+| 25507                                                                                | Weighted-mean FA in tract posterior thalamic radiation (left)                                        |
+| 25508                                                                                | Weighted-mean FA in tract posterior thalamic radiation (right)                                       |
+| 25509                                                                                | Weighted-mean FA in tract superior longitudinal fasciculus (left)                                    |
+| 25510                                                                                | Weighted-mean FA in tract superior longitudinal fasciculus (right)                                   |
+| 25511                                                                                | Weighted-mean FA in tract superior thalamic radiation (left)                                         |
+| 25512                                                                                | Weighted-mean FA in tract superior thalamic radiation (right)                                        |
+| 25513                                                                                | Weighted-mean FA in tract uncinate fasciculus (left)                                                 |
+| 25514                                                                                | Weighted-mean FA in tract uncinate fasciculus (right)                                                |
+| 25515                                                                                | Weighted-mean MD in tract acoustic radiation (left)                                                  |
+| 25516                                                                                | Weighted-mean MD in tract acoustic radiation (right)                                                 |
+| 25517                                                                                | Weighted-mean MD in tract anterior thalamic radiation (left)                                         |
+| 25518                                                                                | Weighted-mean MD in tract anterior thalamic radiation (right)                                        |
+| 25519                                                                                | Weighted-mean MD in tract cingulate gyrus part of cingulum (left)                                    |
+| 25520                                                                                | Weighted-mean MD in tract cingulate gyrus part of cingulum (right)                                   |
+| 25523                                                                                | Weighted-mean MD in tract corticospinal tract (left)                                                 |
+| 25524                                                                                | Weighted-mean MD in tract corticospinal tract (right)                                                |
+| 25525                                                                                | Weighted-mean MD in tract forceps major                                                              |
+| 25526                                                                                | Weighted-mean MD in tract forceps minor                                                              |
+| 25527                                                                                | Weighted-mean MD in tract inferior fronto-occipital fasciculus (left)                                |
+| 25528                                                                                | Weighted-mean MD in tract inferior fronto-occipital fasciculus (right)                               |
+| 25529                                                                                | Weighted-mean MD in tract inferior longitudinal fasciculus (left)                                    |
+| 25530                                                                                | Weighted-mean MD in tract inferior longitudinal fasciculus (right)                                   |
+| 25532                                                                                | Weighted-mean MD in tract medial lemniscus (left)                                                    |
+| 25533                                                                                | Weighted-mean MD in tract medial lemniscus (right)                                                   |
+| 25531                                                                                | Weighted-mean MD in tract middle cerebellar peduncle                                                 |
+| 25521                                                                                | Weighted-mean MD in tract parahippocampal part of cingulum (left)                                    |
+| 25522                                                                                | Weighted-mean MD in tract parahippocampal part of cingulum (right)                                   |
+| 25534                                                                                | Weighted-mean MD in tract posterior thalamic radiation (left)                                        |
+| 25535                                                                                | Weighted-mean MD in tract posterior thalamic radiation (right)                                       |
+| 25536                                                                                | Weighted-mean MD in tract superior longitudinal fasciculus (left)                                    |
+| 25537                                                                                | Weighted-mean MD in tract superior longitudinal fasciculus (right)                                   |
+| 25538                                                                                | Weighted-mean MD in tract superior thalamic radiation (left)                                         |
+| 25539                                                                                | Weighted-mean MD in tract superior thalamic radiation (right)                                        |
+| 25540                                                                                | Weighted-mean MD in tract uncinate fasciculus (left)                                                 |
+| 25541                                                                                | Weighted-mean MD in tract uncinate fasciculus (right)                                                |
+| **Susceptibility Weighted MRI**                                                          |                                                                                                      |
+| 24479                                                                                | Median magnetic susceptibility in accumbens (left)                                                   |
+| 24480                                                                                | Median magnetic susceptibility in accumbens (right)                                                  |
+| 24477                                                                                | Median magnetic susceptibility in amygdala (left)                                                    |
+| 24478                                                                                | Median magnetic susceptibility in amygdala (right)                                                   |
+| 24469                                                                                | Median magnetic susceptibility in caudate (left)                                                     |
+| 24470                                                                                | Median magnetic susceptibility in caudate (right)                                                    |
+| 24475                                                                                | Median magnetic susceptibility in hippocampus (left)                                                 |
+| 24476                                                                                | Median magnetic susceptibility in hippocampus (right)                                                |
+| 24473                                                                                | Median magnetic susceptibility in pallidum (left)                                                    |
+| 24474                                                                                | Median magnetic susceptibility in pallidum (right)                                                   |
+| 24471                                                                                | Median magnetic susceptibility in putamen (left)                                                     |
+| 24472                                                                                | Median magnetic susceptibility in putamen (right)                                                    |
+| 24481                                                                                | Median magnetic susceptibility in substantia nigra (left)                                            |
+| 24482                                                                                | Median magnetic susceptibility in substantia nigra (right)                                           |
+| 24467                                                                                | Median magnetic susceptibility in thalamus (left)                                                    |
+| 24468                                                                                | Median magnetic susceptibility in thalamus (right)                                                   |
+| 25038                                                                                | Median T2 star in accumbens (left)                                                                   |
+| 25039                                                                                | Median T2 star in accumbens (right)                                                                  |
+| 25036                                                                                | Median T2 star in amygdala (left)                                                                    |
+| 25037                                                                                | Median T2 star in amygdala (right)                                                                   |
+| 25028                                                                                | Median T2 star in caudate (left)                                                                     |
+| 25029                                                                                | Median T2 star in caudate (right)                                                                    |
+| 25034                                                                                | Median T2 star in hippocampus (left)                                                                 |
+| 25035                                                                                | Median T2 star in hippocampus (right)                                                                |
+| 25032                                                                                | Median T2 star in pallidum (left)                                                                    |
+| 25033                                                                                | Median T2 star in pallidum (right)                                                                   |
+| 25030                                                                                | Median T2 star in putamen (left)                                                                     |
+| 25031                                                                                | Median T2 star in putamen (right)                                                                    |
+| 24483                                                                                | Median T2 star in substantia nigra (left)                                                            |
+| 24484                                                                                | Median T2 star in substantia nigra (right)                                                           |
+| 25026                                                                                | Median T2 star in thalamus (left)                                                                    |
+| 25027                                                                                | Median T2 star in thalamus (right)                                                                   |
+| **Task fMRI**                                                                            |                                                                                                      |
+| 24444                                                                                | Mean absolute head motion from tfMRI                                                                 |
+| 25052                                                                                | Median BOLD effect (in group-defined amygdala activation mask) for faces-shapes contrast             |
+| 25044                                                                                | Median BOLD effect (in group-defined mask) for faces activation                                      |
+| 25040                                                                                | Median BOLD effect (in group-defined mask) for shapes activation                                     |
+| 25048                                                                                | Median BOLD effect (in group-defined mask) for faces-shapes contrast                                 |
+| **Resting-state fMRI**                                                                   |                                                                                                      |
+| 24438                                                                                | Mean absolute head motion from rfMRI                                                                 |
+| 25750                                                                                | rfMRI full correlation matrix, dimension 25                                                          |
+| 25752                                                                                | rfMRI partial correlation matrix, dimension 25                                                       |
+| 25754                                                                                | rfMRI component amplitudes, dimension 25                                                             |
+| 25751                                                                                | rfMRI full correlation matrix, dimension 100                                                         |
+| 25753                                                                                | rfMRI partial correlation matrix, dimension 100                                                      |
+| 25755                                                                                | rfMRI component amplitudes, dimension 100                                                            |
+
+
+### Cognitive Decline Outcome Measures
+
+The cognitive functioning phenotypes detailed above are the outcome variables of interest for each of the following analyses. These measures of cognitive performance provide participants' performance on seven tests: Reaction time test (simple processing speed), numeric memory test (working memory), pairs matching test (episodic memory), fluid intelligence test (fluid intelligence), picture vocabulary test (crytallised intelligence), trail making test (executive function), symbol digit substitution test (complex processing speed). 
+
+The rate of decline for each cognitive outcome will be calculated as follows:
+
+<center>
+**γdn = scaled(∆Score/∆Time)**
+</center>
+
+Where the rate of decline (γ) for a given cognitive domain (d) in a given participant
+(n) is calculated from the standardised (subtract mean and divide by standard
+deviation of the sample difference in score per year).
+
+### Calculating the Rate of Overall Cognitive Decline
+
+Additionally, an exploratory factor analysis (EFA) will be trained on the baseline cognitive performance scores in each test to produce a single factor model of the overall cognitive functioning (g-factor) of each participant at baseline. This model will be applied (with fixed loadings) to the follow-up cognitive performance scores to calculate the overall cognitive functioning of each participant at follow-up. 
+
+```{r}
+# Load necessary libraries
+library(psych)
+library(lavaan)
+
+# Load in dfs 
+baseline_cog_df = read.csv("baseline_cog_df.csv", header = TRUE)
+followup_cog_df = read.csv("followup_cog_df.csv", header = TRUE)
+time_diff_df = read.csv("time_diff_df.csv", header = TRUE)
+
+# Clean data: Remove rows with NA values
+baseline_cog_df_clean <- na.omit(baseline_cog_df)
+followup_cog_df_clean <- na.omit(followup_cog_df)
+
+# Ensure follow-up data has the same columns as baseline data
+followup_cog_df_clean <- followup_cog_df_clean[, colnames(baseline_cog_df_clean), drop = FALSE]
+
+# Extract the mean and sd from the cleaned baseline data
+baseline_means <- colMeans(baseline_cog_df_clean)
+baseline_sds <- apply(baseline_cog_df_clean, 2, sd)
+
+# Scale baseline data
+baseline_cog_df_scaled <- scale(baseline_cog_df_clean)
+
+# Scale follow-up data using baseline scale parameters
+followup_cog_df_scaled <- sweep(followup_cog_df_clean, 2, baseline_means, FUN = "-")
+followup_cog_df_scaled <- sweep(followup_cog_df_scaled, 2, baseline_sds, FUN = "/")
+
+# Drop unnecessary columns and match dimensions
+baseline_cog_df_scaled2 <- baseline_cog_df_scaled[,-14] # Adjust as necessary
+followup_cog_df_scaled <- followup_cog_df_scaled[,-14] # Adjust as necessary
+followup_cog_df_scaled <- followup_cog_df_scaled[1:(dim(followup_cog_df_scaled)[1] - 4),]
+
+# Print dimensions for debugging
+print(dim(followup_cog_df_scaled))  # Check dimensions of scaled follow-up data
+print(dim(loadings))                # Check dimensions of loadings
+
+# Perform EFA on baseline data to extract a single factor model
+efa_baseline <- fa(baseline_cog_df_scaled2, nfactors = 1, rotate = "varimax")
+
+# Get factor loadings from EFA
+loadings <- efa_baseline$loadings
+# BASELINE LOADINGS
+print(loadings)
+
+# Calculate g-factor scores at each time point
+g_factor_baseline <- efa_baseline$scores
+g_factor_followup <- as.matrix(followup_cog_df_scaled) %*% as.matrix(loadings)
+
+# Print results to verify
+print(head(g_factor_followup))
+
+```
+```{r}
+ROCD_df = read.csv("ROCD_df.csv", header = TRUE)
+ROCD_df$ROCD.g.factor[ROCD_df$ROCD.g.factor == 0] <- NA
+scaled_ROCD_df = scale(ROCD_df)
+scaled_ROCD_df = as.data.frame(scaled_ROCD_df)
+```
+
+The main limitation to this approach is that the loadings
+of each cognitive test on the g-factor measure could change between time points.
+Consequently, the validity of the factor structure identified at baseline will be tested on the follow-up cognitive performance data using a confirmatory factor analysis. This allows for model fit to be analysed, as well as tests for measurement invariance across time points. 
+
+```{r}
+library(readr)
+library(semTools)
+# Combine baseline and follow-up data
+combined_data <- rbind(
+  data.frame(time_point = "baseline", baseline_cog_df_scaled2),
+  data.frame(time_point = "followup", followup_cog_df_scaled))
+
+combined_data = combined_data[,-15]
+# Define CFA model
+cfa_model <- 'g_factor =~ Trail.Making.Test.Speed..A. + Trail.Making.Test.Speed..B. + Trail.Making.Test.Errors..A. + Trail.Making.Test.Errors..B. + Symbol.digit.matches.made.correctly + Symbol.digit.matches.attempted + Pairs.Matching.Speed.1 + Pairs.Matching.Speed.2 + Pairs.Matching.Errors.1 + Pairs.Matching.Errors.2 + Numeric.Memory + Fluid.intelligence + Reaction.Time' 
+
+# Configural invariance
+fit_configural <- cfa(cfa_model, data = combined_data, group = 'time_point')
+
+# Metric invariance
+fit_metric <- cfa(cfa_model, data = combined_data, group = 'time_point', group.equal = 'loadings')
+
+# Scalar invariance
+fit_scalar <- cfa(cfa_model, data = combined_data, group = 'time_point', group.equal = c('loadings', 'intercepts'))
+
+# Compare models
+model_comparisons = compareFit(fit_configural, fit_metric, fit_scalar)
+summary(model_comparisons)
+
+# Omnibus invariance testing
+measurementInvariance(model = cfa_model, data = combined_data, group = "time_point")
+
+summary(fit_configural)
+```
+
+
+
+The calculated g-factor scores will then be used to model the rate of overall cognitive decline using a mixed-effects model. This allows us to account for variability in the follow-up period among participants and to provide more robust estimates of the longitudinal changes in the validated g-factor scores for each individual.
+
+```{r}
+# save the g_factor scores as dfs
+write.csv(g_factor_baseline, file="g_factor_baseline.csv")
+write.csv(g_factor_followup, file="g_factor_followup.csv")
+
+# Calculate the difference in g-factor scores
+g_factor_difference <- g_factor_followup - g_factor_baseline
+
+# Create a data frame for the mixed-effects model
+mixed_model_data <- data.frame(
+  participant = rep(1:nrow(baseline_cog_df), 2),
+  time_point = rep(c("baseline", "followup"), each = nrow(baseline_cog_df)),
+  g_factor = c(g_factor_baseline, g_factor_followup),
+  time_diff_online = c(rep(0, nrow(baseline_cog_df)), time_diff_df$time_diff_online),
+  time_diff_centre = c(rep(0, nrow(baseline_cog_df)), time_diff_df$time_diff_centre)
+)
+
+
+# Using the lme4 package for mixed-effects models
+library(lme4)
+library(lmerTest)
+Mxdmodel <- lmer(g_factor ~ time_point * time_diff_online + time_point * time_diff_centre + (1 | participant), data = mixed_model_data)
+summary(Mxdmodel)
+
+# Extract random effects (including slopes)
+random_effects <- ranef(Mxdmodel)
+
+# Random slopes for time_point for each participant
+annual_change_g <- random_effects$participant[, "time_pointfollowup"]
+
+
+```
+
+
+This approach, involving EFA, CFA, and mixed-effects modeling, is commonly used in cognitive psychology and related fields. Notably, EFA has been used previously to identify underlying factors in the UKBiobank cognitive performance data (Fawns-Ritchie & Deary, 2020; Ciobanu et al., 2023). However, structural equation modelling (SEM) may be used additionally if the initial EFA/CFA factor models prove to be unstable across time. SEM would allow us to handle measurement invariance across time points by incorporating both individual and temporal variability into the model, while considering measurement error.
+
+### Univariate pairwise association analyses
+
+The first objective of the proposed study is to analyse the predictors of an individual's rate of cognitive decline during middle to older ageing. To achieve this objective, univariate pairwise associations will be analysed between non-categorical phenotypes (from all measured aspects of participants’ holistic health (hauora)) and the rate of cognitive decline (for each cognitive subdomain and overall). Pearson correlation r and p values will be calculated.
+
+```{r}
+# Load necessary libraries
+library(psych)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(ggplot2)
+library(readr)
+library(reshape2)
+library(ggcorrplot)
+library(plotly)  # For interactive plots
+
+# Load the data
+univar_df <- read.csv("univar_df.csv", header = TRUE)
+
+# make sure to select only continuous variables
+is_discrete   <- function(vec) all(is.numeric(univar_df)) && all(univar_df %% 1 == 0)
+is_continuous <- function(vec) all(is.numeric(vec)) && !is_discrete(vec)
+continuous_univar_df <- univar_df %>%
+        select(where(is_continuous))
+
+
+# Standardise all variables in 'univar_df'
+scaled_univar_df = scale(continuous_univar_df)
+
+# convert the matrix into dataframe 
+scaled_univar_df =as.data.frame(scaled_univar_df)
+
+# remove cognitive vars from scaled_univar_df
+scaled_univar_df = scaled_univar_df[,-c(21:63)]
+write.csv(scaled_univar_df, file="scaled_univar_df.csv")
+```
+
+As the phenotype data were collected in many different units, both variables in each association will be standardised to allow Pearson correlation r values to be interpreted as the effect size. Pearson correlation assumes that variables are normally distributed and have linear relationships. Non-linear relationships or non-normally distributed variables might not be well captured using this method. Consequently, for non-normal variables the non-parametric Spearman's rank correlation will be used instead. 
+
+Due to the large sample size of the UKBiobank, it is likely that even with a weak effect size (small r value), consistent and true effects may be detectable as a significant p-value. Consequently, p-values will be used to identify the strongest associations. However, there are varying amounts of missing data across measures, so the resulting associations will have highly varied degrees of freedom. Findings will be displayed using conventional Manhattan plots of –log10(P) and heatmaps visualising the direction and strength (meaningfulness) of relationships in the correlation matrix. An example Manhattan plot is shown below in Figure 1 for reference. Both the significance and strength and direction of effect size will be utilised in interpreting associations. Additionally, a full table of significant associations will be ordered and displayed in supplementary materials. 
+
+Multiple comparison correction will be completed for the full set of (a to be determined number of) correlations by adjusting the significance threshold. This will be completed using a highly conservative Bonferroni correction for family-wise error control at Pcorrected < 0.05, corresponding to a -log10(Puncorrected) of (TBC). 
+
+```{r}
+# Test normality of variables using the Kolmogorov-Smirnov test
+normality_test <- function(x) {
+  ks.test(x, "pnorm", mean(x, na.rm = TRUE), sd(x, na.rm = TRUE))$p.value
+}
+
+# Apply the normality test across all variables in the data frame
+normality_results <- scaled_univar_df %>% summarise(across(everything(), normality_test))
+# Apply the normality test across all variables in the ROCD data frame
+ROCD_normality_results <- scaled_ROCD_df %>% summarise(across(everything(), normality_test))
+
+# Determine if variables are normally distributed
+normality_status <- normality_results %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "p_value") %>%
+  mutate(normal = ifelse(p_value > 0.05, TRUE, FALSE))
+# Determine if ROCD variables are normally distributed
+ROCD_normality_status <- ROCD_normality_results %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "p_value") %>%
+  mutate(normal = ifelse(p_value > 0.05, TRUE, FALSE))
+
+# Function to calculate Pearson or Spearman correlation based on normality
+calculate_correlation <- function(var1, var2, normal1, normal2) {
+  # Remove NAs from both variables
+  valid_indices <- which(!is.na(var1) & !is.na(var2))
+  
+  var1 <- var1[valid_indices]
+  var2 <- var2[valid_indices]
+  
+  # Check if there are enough valid observations
+  if (length(var1) > 2 && length(var2) > 2) {
+    if (normal1 & normal2) {
+      result <- cor.test(var1, var2, method = "pearson")
+    } else {
+      result <- cor.test(var1, var2, method = "spearman")
+    }
+    return(c(result$estimate, result$p.value))
+  } else {
+    return(c(NA, NA))  # Return NA if not enough data
+  }
+}
+
+
+# Calculate correlations and p-values
+cor_results <- expand.grid(Var1 = colnames(scaled_univar_df), Var2 = colnames(scaled_ROCD_df)) %>%
+  rowwise() %>%
+  mutate(
+    correlation = {
+      normal1 <- normality_status$normal[normality_status$variable == Var1]
+      normal2 <- ROCD_normality_status$normal[ROCD_normality_status$variable == Var2]
+      calculate_correlation(scaled_univar_df[[Var1]], scaled_ROCD_df[[Var2]], normal1, normal2)[1]
+    },
+    p_value = {
+      normal1 <- normality_status$normal[normality_status$variable == Var1]
+      normal2 <- ROCD_normality_status$normal[ROCD_normality_status$variable == Var2]
+      calculate_correlation(scaled_univar_df[[Var1]], scaled_ROCD_df[[Var2]], normal1, normal2)[2]
+    }
+  ) %>%
+  ungroup()
+
+# Add -log10(p-value) for plotting
+cor_results <- cor_results %>% mutate(log_p = -log10(p_value))
+write.csv(cor_results, file = "cor_results.csv")
+
+# Calculate Bonferroni threshold
+bonferroni_threshold <- -log10(0.05 / nrow(cor_results))
+
+# load in renamed cor results
+cor_results_renamed = read.csv("cor_results_renamed.csv", header = TRUE)
+```
+
+
+**Figure 1**
+
+```{r}
+library(RColorBrewer)
+
+# Load Set2 palette from RColorBrewer
+colors <- brewer.pal(n = 8, name = "Set2")
+
+# Load cor_results_filtered from CSV
+cor_results_filtered <- read.csv("cor_results_filtered.csv", header = TRUE)
+
+# Define the desired order for Var2 in the legend
+desired_legend_order <- c("Overall Cognitive Functioning (G)", "Crystallised Intelligence", "Fluid Intelligence", "Simple Processing Speed", "Complex Processing Speed", "Working Memory", "Episodic Memory", "Executive Function")
+
+# Convert Var2 to a factor with the preset order
+cor_results_filtered$Var2 <- factor(cor_results_filtered$Var2, levels = desired_legend_order)
+
+# Map Var2 to the corresponding colors in the list
+var2_colors <- setNames(colors[1:length(desired_legend_order)], desired_legend_order)
+
+# Group by Var and Var2 and keep only the row with the maximum log_p for each group
+cor_results_filtered <- cor_results_filtered %>%
+  group_by(Var, Var2) %>%
+  filter(log_p == max(log_p)) %>%
+  ungroup()
+
+# Adjust Var to ensure it appears only once along the x-axis
+cor_results_filtered$Var <- factor(cor_results_filtered$Var, levels = unique(cor_results_filtered$Var))
+
+# Ensure that log_p_plot is never less than log10(1) for plotting purposes
+cor_results_filtered <- cor_results_filtered %>%
+  mutate(
+    log_p_plot = ifelse(log_p < 1, 1, log_p)
+  )
+
+# Define custom tick marks and labels for x-axis
+custom_tickvals <- c(1, 10, 30, 48, 204, 211, 264, 295, 321)  # Positions of tick marks
+custom_ticktext <- c("Demographics", "Lifestyle", "Mental/Physical Health", "Structural MRI", "Functional MRI", "Diffusion MRI", "Susceptibility Weighted MRI", "ASL-MRI", "Biomarkers")  # Labels for tick marks
+
+manhattan_plot <- plot_ly(
+  data = cor_results_filtered,
+  x = ~Var,
+  y = ~log_p_plot,  # Use the adjusted log_p for plotting
+  color = ~Var2,    # Map Var2 to color
+  colors = var2_colors,  # Set colors for Var2
+  type = 'scatter',
+  mode = 'markers',
+  marker = list(
+    symbol = 'circle-open', # Use open circles as markers
+    size = 10               # Set marker size
+  ),
+  text = ~paste("Var1:", Var, "<br>Var2:", Var2, "<br>Correlation:", sprintf(correlation, fmt = '%#.3f'), "<br>P-value:", sprintf(p_value, fmt = '%#.3f'), "<br>-log10(P):", sprintf(log_p, fmt = '%#.3f')) # Use original log_p for hover text
+) %>%
+  layout(
+    xaxis = list(
+      tickangle = 90, 
+      categoryorder = "array", 
+      categoryarray = levels(cor_results_filtered$Var),  # Ensure levels are ordered correctly
+      title = list(text = "Phenotypes", standoff = 30),  # Set x-axis title
+      tickvals = custom_tickvals,  # Use custom tick positions
+      ticktext = custom_ticktext   # Use custom tick labels
+    ),
+    yaxis = list(
+      title = "-log<sub>10</sub>(<i>P</i>)",
+      type = "log",
+      autorange = FALSE,  # Disable automatic range to set custom limits
+      range = c(log10(0.9), log10(300)),  # Set y-axis range
+      tickvals = c(1, 3, 10, 25, 100, 250), # Define custom tick values
+      ticktext = c("1", "3", "10", "25", "100", "250")  # Custom tick labels
+    ),
+    shapes = list(
+      list(
+        type = 'line', 
+        x0 = 0.05, x1 = 1, 
+        y0 = bonferroni_threshold, y1 = bonferroni_threshold, 
+        xref = 'paper', yref = 'y', 
+        line = list(color = 'black', dash = 'dash')
+      )
+    ),
+    annotations = list(
+      list(
+        x = -0.02,
+        y = log10(bonferroni_threshold),
+        xref = "paper",
+        yref = "y",
+        text = "Bonferroni", 
+        showarrow = FALSE,
+        xanchor = "left",
+        font = list(color = 'black')
+      )
+    ),
+    legend = list(
+      title = list(text = "Cognitive Decline Domains"),
+      orientation = "v",      # Vertical orientation
+      xanchor = "left",       # Anchor to the left side
+      x = 1.01,                # Position the legend to the right of the plot
+      y = 0.5,                 # Center the legend vertically
+      traceorder = "normal"
+    )
+  )
+
+manhattan_plot
+
+
+
+
+
+
+# Display significant associations based on Bonferroni threshold
+significant_results <- cor_results %>% filter(log_p > bonferroni_threshold)
+write.csv(significant_results, file="sig_univar_cors.csv")
+print(significant_results %>% arrange(desc(log_p)))
+
+htmlwidgets::saveWidget(manhattan_plot, file = "interactive_manhattan_plot.html", selfcontained = FALSE)
+```
+
+```{r}
+# Load the correlation matrix from a CSV file
+cor_matrix <- read.csv("cor_matrix.csv", row.names = 1)  # Set the first column as row names
+
+# Prepare hover text as a matrix
+hover_text <- matrix("", nrow = nrow(cor_matrix), ncol = ncol(cor_matrix))
+for (i in 1:nrow(cor_matrix)) {
+  for (j in 1:ncol(cor_matrix)) {
+    hover_text[i, j] <- paste("Var1:", rownames(cor_matrix)[i], 
+                              "<br>Var2:", colnames(cor_matrix)[j], 
+                              "<br>Correlation:", sprintf("%.3f", cor_matrix[i, j]))
+  }
+}
+
+# Define custom tick marks and labels for y-axis
+custom_tickvals <- c(1, 10, 30, 48, 204, 211, 264, 295, 321)  # Positions of tick marks
+custom_ticktext <- c("Demographics", "Lifestyle", "Mental/Physical Health", "Structural MRI", "Functional MRI", "Diffusion MRI", "Susceptibility Weighted MRI", "ASL-MRI", "Biomarkers")  # Labels for tick marks
+
+# Define custom tick marks and labels for x-axis
+custom_x_tickvals <- c(0, 1, 2, 3, 4, 5, 6, 7)  # Positions of tick marks
+custom_x_ticktext <- c("Overall Cognitive Functioning (G)", "Crystallised Intelligence", "Fluid Intelligence", "Simple Processing Speed", "Complex Processing Speed", "Working Memory", "Episodic Memory", "Executive Function")  # Labels for tick marks
+
+
+# Interactive heatmap
+heatmap_plot <- plot_ly(
+  z = as.matrix(cor_matrix),  # Convert cor_matrix to a matrix if it's a data frame
+  x = colnames(cor_matrix),
+  y = rownames(cor_matrix),
+  type = 'heatmap',
+  coloraxis = 'coloraxis',
+  zmin = -1, zmax = 1,
+  text = hover_text,  # Use the formatted hover text
+  hoverinfo = 'text'
+) %>%
+  layout(
+    title = "Heatmap of Correlations",
+    xaxis = list(
+      title = list(
+        text = "Cognitive Decline Domains",
+        font = list(
+          family = "Arial, sans-serif",
+          size = 16,
+          color = "black",
+          bold = TRUE  # Bolding the axis title
+        )
+      ),
+      tickangle = 45,
+      tickvals = custom_x_tickvals,  # Use custom tick positions for x-axis
+      ticktext = custom_x_ticktext   # Use custom tick labels for x-axis
+    ),
+    yaxis = list(
+      title = list(
+        text = "Phenotypes",
+        font = list(
+          family = "Arial, sans-serif",
+          size = 16,
+          color = "black",
+          bold = TRUE  # Bolding the axis title
+        )
+      ),
+      standoff = 20,  # Move the y-axis title farther left
+      tickvals = custom_tickvals,  # Use custom tick positions
+      ticktext = custom_ticktext   # Use custom tick labels
+    )
+  )
+
+# Apply the color scale
+heatmap_plot <- heatmap_plot %>% layout(coloraxis = list(colorscale = 'Viridis'))
+heatmap_plot
+
+
+```
+
+
+### Multivariate Analysis: Elastic Net
+
+The second objective of the proposed study is to create and evaluate a multidimensional predictive model that explores how accurately we can predict the rate at which an individual will cognitively decline during ageing. To achieve this, we will use an elastic net, a regularised regression method with a combination of the LASSO (providing feature selection) and ridge regression (providing mutual regularisation) penalty terms. Crucially for this investigation, the elastic net handles multicollinearity well whilst minimising the bias-variance trade-off. This method gains the interpretability of linear regression, allowing us to include both categorical and non-categorical phenotypes, and observe the unique effect (regarding the variables we have analysed) of each phenotype on the rate of cognitive decline (for each cognitive subdomain and overall).
+
+The elastic net will be cast on an 80/20 train-test split where all phenotypes and rate of cognitive decline outcome measures are standardised. 10-fold cross-validation will be used to optimise the hyperparameters (alpha and lambda) for the elastic net model, reducing the risk of overfitting. Furthermore, assumptions of linearity, independence of residuals, and homoscedasticity will be tested using a scatterplot of the residual vs. fitted values, a Durbin-Watson test and a Breusch-Pagan test respectively. Additionally, the models predictive performance will be evaluated using RMSE and R^2 metrics. Nevertheless, regularised regression methods can still be susceptible to biased solutions caused by the inclusion of a regularisation term that may produce differing results in the case of multicollinearity. Conservatively, to increase the certainty and robustness of our estimates, bootstrapping (i.e., re-sampling with replacement 1,000 times) will be used to generate a distribution of coefficients for each predictor variable. Phenotypes with bootstrapped 95% confidence intervals that do not overlap zero will be considered informative for the prediction of cognitive decline. 
+
+```{r}
+# Load necessary libraries
+library(caret)
+library(glmnet)
+library(car)  # for assumption tests
+library(dplyr)
+library(mice)
+library(randomForest)
+library(ggplot2)
+library(broom)
+
+# Load the data
+multivar_df <- read.csv("multivar_df.csv", header = TRUE)
+multivar_df <- multivar_df %>%
+  select(where(is.numeric))
+gfact_enet_df = multivar_df[,-c(2:13)]
+
+# Identify which variables are continuous and which are categorical
+continuous_vars <- sapply(gfact_enet_df, is.numeric)
+categorical_vars <- !continuous_vars
+
+# Define methods: 'norm' for linear regression (continuous) and 'rf' for random forest (categorical)
+imputation_methods <- ifelse(continuous_vars, "norm", "rf")
+
+# Perform imputation
+imputed_data <- mice(gfact_enet_df, method = imputation_methods, m = 95, maxit = 5, seed = 123)
+
+# Extract the completed data
+gfact_enet_df <- complete(imputed_data)
+
+# Step 1: Create train-test split (80/20)
+set.seed(123)  # for reproducibility
+train_indices = sample(nrow(gfact_enet_df), 0.8 * nrow(gfact_enet_df))
+test_indices = setdiff(1:nrow(gfact_enet_df), train_indices)
+
+# Step 2: Standardize predictors and response
+train_data = gfact_enet_df[train_indices,]
+test_data = gfact_enet_df[test_indices,]
+scaled_train = scale(train_data)
+scaled_test = scale(test_data)
+
+# Step 3: Set up cross-validation and elastic net parameters
+cv_control <- trainControl(method = "cv", number = 10)
+lambda_seq <- 10^seq(-2, 2, by = 0.2)  # sequence of lambda values to try
+
+# Step 4: Fit elastic net model using caret
+enet_model <- train(
+  ROCD.g.factor ~ .,
+  data = as.data.frame(scaled_train),
+  method = "glmnet",
+  trControl = cv_control,
+  tuneGrid = expand.grid(alpha = 0:1, lambda = lambda_seq)
+)
+
+# Step 5: Predict on test data
+enet_pred <- predict(enet_model, newdata = as.data.frame(scaled_test))
+
+# Step 6: Evaluate performance (e.g., RMSE, R-squared)
+rmse <- RMSE(enet_pred, test_data$ROCD.g.factor)
+r_squared <- R2(enet_pred, test_data$ROCD.g.factor)
+
+# Step 7: Assumption tests
+# Linearity assumption: Check scatterplots of residuals vs. predicted values
+residuals <- enet_pred - test_data$ROCD.g.factor
+ggplot(data.frame(Predicted = enet_pred, Residuals = residuals), aes(x = Predicted, y = Residuals)) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "red") +
+  ggtitle("Residuals vs. Predicted Values")
+
+# Independence of residuals: Check Durbin-Watson test
+dwtest <- durbinWatsonTest(lm(residuals ~ enet_pred))
+print(dwtest)
+
+# Homoscedasticity: Check scatterplot of residuals vs. predicted values (already created) and Breusch-Pagan test
+bptest <- bptest(lm(residuals ~ enet_pred))
+print(bptest)
+
+# Step 8: Bootstrap to generate coefficient distributions
+n_boot <- 1000
+boot_coeffs <- matrix(NA, n_boot, ncol(gfact_enet_df) - 1)
+for (i in 1:n_boot) {
+  boot_sample <- sample(nrow(gfact_enet_df), replace = TRUE)
+  boot_train <- gfact_enet_df[boot_sample,]
+  boot_model <- glmnet(
+    x = as.matrix(boot_train[, -1]),
+    y = boot_train$ROCD.g.factor,
+    alpha = enet_model$bestTune$alpha,
+    lambda = enet_model$bestTune$lambda
+  )
+  boot_coeffs[i, ] <- coef(boot_model)[-1]  # Exclude the intercept
+}
+
+# Step 9: Summarize coefficients (mean, CI, etc.)
+boot_mean_coeffs <- apply(boot_coeffs, 2, mean)
+boot_ci_coeffs <- apply(boot_coeffs, 2, function(x) quantile(x, c(0.025, 0.975)))
+
+# Display results
+print("Elastic Net Model Performance:")
+print(paste("RMSE:", rmse))
+print(paste("R-squared:", r_squared))
+
+print("\nBootstrap Mean Coefficients:")
+print(boot_mean_coeffs)
+
+print("\nBootstrap 95% Confidence Intervals:")
+print(boot_ci_coeffs)
+
+# Step 10: Visualize cross-validation results and coefficient paths
+# Cross-validation plot
+plot(enet_model)
+
+# Coefficient path plot
+coef_path <- glmnet(
+  x = as.matrix(scaled_train[, -1]),
+  y = scaled_train[, 1],
+  alpha = enet_model$bestTune$alpha,
+  lambda = lambda_seq
+)
+plot(coef_path, xvar = "lambda", label = TRUE)
+
+# Save plots as images
+ggsave("residuals_vs_predicted.png", width = 6, height = 4)
+ggsave("cross_validation_plot.png", plot = last_plot(), width = 6, height = 4)
+```
+
+
